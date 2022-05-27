@@ -773,7 +773,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
           playback(v, attachment.getUri());
           break;
       }
-    });
+    }});
 
     mGridView.setOnItemLongClickListener((parent, v, position, id) -> {
       // To avoid deleting audio attachment during playback
