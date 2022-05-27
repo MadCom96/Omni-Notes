@@ -26,9 +26,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
+
+import java.io.File;
+
 import it.feio.android.omninotes.factory.MediaStoreFactory;
 import it.feio.android.omninotes.helpers.LogDelegate;
-import java.io.File;
 
 
 public class FileHelper {
@@ -76,7 +78,7 @@ public class FileHelper {
         final String docId = DocumentsContract.getDocumentId(uri);
         final String[] split = docId.split(":");
         final String type = split[0];
-        MediaStoreFactory mediaStoreFactory = new MediaStoreFactory();
+        MediaStoreFactory mediaStoreFactory = MediaStoreFactory.getInstance();
         Uri contentUri = mediaStoreFactory.createURI(type);
 
         final String selection = "_id=?";

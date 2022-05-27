@@ -21,6 +21,11 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 public class MediaStoreFactory {
+  private static MediaStoreFactory mediaStoreFactory = new MediaStoreFactory();
+  private MediaStoreFactory(){}
+  public static MediaStoreFactory getInstance(){
+    return mediaStoreFactory;
+  }
 
   public Uri createURI(String type) {
     switch (type) {
