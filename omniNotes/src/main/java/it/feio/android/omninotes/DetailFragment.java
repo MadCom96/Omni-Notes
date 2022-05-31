@@ -315,9 +315,9 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
     // Force the navigation drawer to stay opened if tablet mode is on, otherwise has to stay closed
     if (NavigationDrawerFragment.isDoublePanelActive()) {
-      getMainActivityDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+      mainActivity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     } else {
-      getMainActivityDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+      mainActivity.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     restoreTempNoteAfterOrientationChange(savedInstanceState);
@@ -332,15 +332,11 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
     setRetainInstance(false);
   }
 
-  private java.lang.Object getMainActivityDrawerLayout() {
-    return mainActivity.getDrawerLayout();
-  }
-
   private void addSketchedImageIfPresent() {
     if (mainActivity.getSketchUri() != null) {
       Attachment mAttachment = new Attachment(mainActivity.getSketchUri(), MIME_TYPE_SKETCH);
       addAttachment(mAttachment);
-      mainActivity.setSketchUri(null);
+      mainActivity.setSketchUri();
       // Removes previous version of edited image
       if (sketchEdited != null) {
         noteTemporary.getAttachmentsList().remove(sketchEdited);
@@ -725,56 +721,53 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       Uri sharableUri = FileProviderHelper.getShareableUri(attachment);
       Intent attachmentIntent;
       if (MIME_TYPE_FILES.equals(attachment.getMime_type())) {
+         switch (attachment.getMime_type()) {
+           case "files/*":
+             attachmentIntent = new Intent(Intent.ACTION_VIEW);
+             attachmentIntent.setDataAndType(sharableUri, StorageHelper.getMimeType(mainActivity,
+                            sharableUri));
+             attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent
+                            .FLAG_GRANT_WRITE_URI_PERMISSION);
+             if (IntentChecker.isAvailable(mainActivity.getApplicationContext(), attachmentIntent, null)) {
+               startActivity(attachmentIntent);
+             }
+             else {
+               mainActivity.showMessage(R.string.feature_not_available_on_this_device, ONStyle.WARN);
+             }
+             break;
 
-      switch (attachment.getMime_type()) {
-        case "files/*":
-          attachmentIntent = new Intent(Intent.ACTION_VIEW);
-          attachmentIntent.setDataAndType(sharableUri, StorageHelper.getMimeType(mainActivity,
-                  sharableUri));
-          attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent
-                  .FLAG_GRANT_WRITE_URI_PERMISSION);
-          if (IntentChecker
-                  .isAvailable(mainActivity.getApplicationContext(), attachmentIntent, null)) {
-            startActivity(attachmentIntent);
-          } else {
-            mainActivity.showMessage(R.string.feature_not_available_on_this_device, ONStyle.WARN);
-          }
-          break;
+             case "image/jpeg":
+             case "image/png":
+             case "video/mp4":
+               noteTemporary.setTitle(getNoteTitle());
+               noteTemporary.setContent(getNoteContent());
+               String title1 = TextHelper.parseTitleAndContent(mainActivity, noteTemporary)[0].toString();
+                    // Images
+               int clickedImage = 0;
+               ArrayList<Attachment> images = new ArrayList<>();
+               for (Attachment mAttachment : noteTemporary.getAttachmentsList()) {
+                 if (MIME_TYPE_IMAGE.equals(mAttachment.getMime_type()) || MIME_TYPE_SKETCH.equals(mAttachment.getMime_type()) || MIME_TYPE_VIDEO.equals(mAttachment.getMime_type())) {
+                   images.add(mAttachment);
+                   if (mAttachment.equals(attachment)) {
+                     clickedImage = images.size() - 1;
+                   }
+                 }
+               }
+                    // Intent
+               attachmentIntent = new Intent(mainActivity, GalleryActivity.class);
+               attachmentIntent.putExtra(GALLERY_TITLE, title1);
+               attachmentIntent.putParcelableArrayListExtra(GALLERY_IMAGES, images);
+               attachmentIntent.putExtra(GALLERY_CLICKED_IMAGE, clickedImage);
+               startActivity(attachmentIntent);
+               break;
 
-        case "image/jpeg":
-        case "image/png":
-        case "video/mp4":
-          noteTemporary.setTitle(getNoteTitle());
-          noteTemporary.setContent(getNoteContent());
-        String title1 = TextHelper.parseTitleAndContent(mainActivity,
-                noteTemporary)[0].toString();
-          // Images
-          int clickedImage = 0;
-          ArrayList<Attachment> images = new ArrayList<>();
-          for (Attachment mAttachment : noteTemporary.getAttachmentsList()) {
-            if (MIME_TYPE_IMAGE.equals(mAttachment.getMime_type())
-                    || MIME_TYPE_SKETCH.equals(mAttachment.getMime_type())
-                    || MIME_TYPE_VIDEO.equals(mAttachment.getMime_type())) {
-              images.add(mAttachment);
-              if (mAttachment.equals(attachment)) {
-                clickedImage = images.size() - 1;
-              }
-            }
-          }
-          // Intent
-          attachmentIntent = new Intent(mainActivity, GalleryActivity.class);
-          attachmentIntent.putExtra(GALLERY_TITLE, title1);
-          attachmentIntent.putParcelableArrayListExtra(GALLERY_IMAGES, images);
-          attachmentIntent.putExtra(GALLERY_CLICKED_IMAGE, clickedImage);
-          startActivity(attachmentIntent);
-          break;
+               case "audio/amr":
+                 playback(v, attachment.getUri());
+                 break;
+         }
 
-        case "audio/amr":
-          playback(v, attachment.getUri());
-          break;
       }
     });
-
     mGridView.setOnItemLongClickListener((parent, v, position, id) -> {
       // To avoid deleting audio attachment during playback
       if (mPlayer != null) {
@@ -1853,7 +1846,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
     // Checks if user has left the app
     if (mainActivity != null) {
-      Animation mAnimation = AnimationUtils.loadAnimation(mainActivity, anim);
+      @SuppressLint("ResourceType") Animation mAnimation = AnimationUtils.loadAnimation(mainActivity, anim);
       mAnimation.setAnimationListener(new AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {

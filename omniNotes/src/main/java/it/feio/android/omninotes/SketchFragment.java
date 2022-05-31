@@ -92,7 +92,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
       Bitmap bmp;
       try {
         bmp = BitmapFactory
-            .decodeStream(getActivity().getContentResolver().openInputStream(baseUri));
+                .decodeStream(getActivity().getContentResolver().openInputStream(baseUri));
         binding.drawing.setBackgroundBitmap(getActivity(), bmp);
       } catch (FileNotFoundException e) {
         LogDelegate.errorLog("Error replacing sketch bitmap background", e);
@@ -101,10 +101,10 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
     // Show the Up button in the action bar.
 
-    if (getActionBar() != null) {
-      getActionBar().setDisplayShowTitleEnabled(true);
-      getActionBar().setTitle(R.string.title_activity_sketch);
-      getActionBar().setDisplayHomeAsUpEnabled(true);
+    if (getMainActivity().getSupportActionBar() != null) {
+      getMainActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+      getMainActivity().getSupportActionBar().setTitle(R.string.title_activity_sketch);
+      getMainActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     binding.sketchStroke.setOnClickListener(v -> {
@@ -140,19 +140,19 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
       private void askForErase() {
         new MaterialDialog.Builder(getActivity())
-            .content(R.string.erase_sketch)
-            .positiveText(R.string.confirm)
-            .onPositive((dialog, which) -> binding.drawing.erase()).build().show();
+                .content(R.string.erase_sketch)
+                .positiveText(R.string.confirm)
+                .onPositive((dialog, which) -> binding.drawing.erase()).build().show();
       }
     });
 
     // Inflate the popup_layout.XML
     LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(
-        AppCompatActivity.LAYOUT_INFLATER_SERVICE);
+            AppCompatActivity.LAYOUT_INFLATER_SERVICE);
     popupLayout = inflater.inflate(R.layout.popup_sketch_stroke, null);
     // And the one for eraser
     LayoutInflater inflaterEraser = (LayoutInflater) getActivity().getSystemService(
-        AppCompatActivity.LAYOUT_INFLATER_SERVICE);
+            AppCompatActivity.LAYOUT_INFLATER_SERVICE);
     popupEraserLayout = inflaterEraser.inflate(R.layout.popup_sketch_eraser, null);
 
     // Actual stroke shape size is retrieved
@@ -175,9 +175,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
     mColorPicker.setOldCenterColor(binding.drawing.getStrokeColor());
   }
 
-  private java.lang.Object getActionBar() {
-    return getMainActivity().getSupportActionBar();
-  }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -202,7 +199,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
         out.close();
         if (bitmapFile.exists()) {
-          getMainActivity().setSketchUri(uri);
+          getMainActivity().setSketchUri();
         } else {
           getMainActivity().showMessage(R.string.error, ONStyle.ALERT);
         }

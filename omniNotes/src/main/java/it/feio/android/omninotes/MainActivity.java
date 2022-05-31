@@ -403,16 +403,14 @@ public class MainActivity extends BaseActivity implements
     }
 
     // Tag search
-    boolean isViewAction = Intent.ACTION_VIEW.equals(intent.getAction());
-    boolean startsWithHashTag = intent.getDataString().startsWith(UrlCompleter.HASHTAG_SCHEME);
-    if (isViewAction && startsWithHashTag) {
+    if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getDataString()
+            .startsWith(UrlCompleter.HASHTAG_SCHEME)) {
       switchToList();
       return;
     }
 
     // Home launcher shortcut widget
-    boolean hasData = intent.getData() != null;
-    if (isViewAction && hasData) {
+    if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
       Long id = Long.valueOf(Uri.parse(intent.getDataString()).getQueryParameter("id"));
       Note note = DbHelper.getInstance().getNote(id);
       if (note == null) {
@@ -646,4 +644,7 @@ public class MainActivity extends BaseActivity implements
   public boolean getPrefsChanged() {
     return prefsChanged;
   }
+
+  public Uri getSketchUri() { return sketchUri; }
+  public void setSketchUri() { this.sketchUri = sketchUri; }
 }
