@@ -23,7 +23,7 @@ import lombok.Setter;
 
 public class SwitchFragmentEvent {
 
-  public enum Direction {
+    public enum Direction {
     CHILDREN, PARENT
   }
 
@@ -34,5 +34,9 @@ public class SwitchFragmentEvent {
   public SwitchFragmentEvent(Direction direction) {
     LogDelegate.debugLog(this.getClass().getName());
     this.direction = direction;
+  }
+
+  public  Direction getDirection() {
+      return this.direction;
   }
 }

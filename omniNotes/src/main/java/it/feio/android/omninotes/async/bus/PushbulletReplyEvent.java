@@ -32,4 +32,8 @@ public class PushbulletReplyEvent {
     LogDelegate.debugLog(this.getClass().getName());
     this.message = message;
   }
+
+  public String getMessage() {
+    return this.message;
+  }
 }
