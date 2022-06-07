@@ -1,5 +1,6 @@
 package it.feio.android.omninotes;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static java.lang.Thread.sleep;
 import static it.feio.android.omninotes.utils.ConstantsBase.DATE_FORMAT_SORTABLE;
@@ -20,8 +21,7 @@ import it.feio.android.omninotes.helpers.date.DateHelper;
 public class MyTest {
     DateHelper dateHelper;
     @Before
-    public void setUp(){
-    }
+    public void setUp(){}
     @Test
     public void getSortableDateTest() throws ParseException, InterruptedException {
         class SDPair{
@@ -53,5 +53,14 @@ public class MyTest {
         }
     }
 
+    @Test
+    public void onDateSetTest(){
+        String formats[] = {"dd MM YYYY",
+                            "EEEE, MMM d, ''yy",
+                            "yyyyy.MMM.dd"};
+        assertEquals("04 07 2001", dateHelper.onDateSet(2001, 7 - 1,4, formats[0]));
+        assertEquals("일요일, 10월 28, '12", dateHelper.onDateSet(2812, 10 - 1, 28, formats[1]));
+        assertEquals("01289.3월.23", dateHelper.onDateSet(1289, 3 - 1, 23, formats[2]));
+    }
 
 }
