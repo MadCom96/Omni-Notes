@@ -56,10 +56,14 @@ public class MyTest {
     @Test
     public void onDateSetTest(){
         String formats[] = {"dd MM YYYY",
-                            "EEEE, MMM d, ''yy",
+                            "MMM d, ''yy",
                             "yyyyy.MMM.dd"};
         assertEquals("04 07 2001", dateHelper.onDateSet(2001, 7 - 1,4, formats[0]));
-        assertEquals("일요일, 10월 28, '12", dateHelper.onDateSet(2812, 10 - 1, 28, formats[1]));
+        assertEquals("04 03 2002", dateHelper.onDateSet(2001, 15 - 1, 4, formats[0]));
+        //month over
+        assertEquals("10월 28, '12", dateHelper.onDateSet(2812, 10 - 1, 28, formats[1]));
+        assertEquals("11월 9, '12", dateHelper.onDateSet(2812, 10 - 1, 40, formats[1]));
+        //day over
         assertEquals("01289.3월.23", dateHelper.onDateSet(1289, 3 - 1, 23, formats[2]));
     }
 
