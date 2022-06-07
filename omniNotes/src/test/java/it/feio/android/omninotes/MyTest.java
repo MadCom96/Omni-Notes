@@ -67,4 +67,18 @@ public class MyTest {
         assertEquals("01289.3월.23", dateHelper.onDateSet(1289, 3 - 1, 23, formats[2]));
     }
 
+    @Test
+    public void onTimeSetTest(){
+        String formats[] = {
+                "hh mm",
+                "HH:mm",
+                "mm분 HH시" };
+        assertEquals("12 59", dateHelper.onTimeSet(24, 59, formats[0]));
+        assertEquals("01 01", dateHelper.onTimeSet(24, 61, formats[0]));
+        //minute over
+        assertEquals("15:14", dateHelper.onTimeSet(15, 14, formats[1]));
+        assertEquals("02:14", dateHelper.onTimeSet(26, 14, formats[1]));
+        //hour over
+        assertEquals("00분 00시", dateHelper.onTimeSet(00, 00, formats[2]));
+    }
 }
