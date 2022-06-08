@@ -18,7 +18,7 @@ import java.util.Random;
 
 import it.feio.android.omninotes.helpers.date.DateHelper;
 
-public class MyTest {
+public class DateHelperTest {
     DateHelper dateHelper;
     @Before
     public void setUp(){}
